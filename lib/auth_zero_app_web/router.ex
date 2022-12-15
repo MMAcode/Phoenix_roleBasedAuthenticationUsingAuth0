@@ -22,6 +22,7 @@ defmodule Auth0AppWeb.Router do
 
     get "/", PublicController, :home_public
     get "/public", PublicController, :home_public
+    get "/myStructure", MyStructure.MyStructureController, :myStructure
   end
 
   scope "/private", Auth0AppWeb do
