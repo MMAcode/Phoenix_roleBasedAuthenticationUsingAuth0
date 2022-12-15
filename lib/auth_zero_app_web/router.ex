@@ -10,6 +10,7 @@ defmodule Auth0AppWeb.Router do
     plug :put_root_layout, {Auth0AppWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user_or_nil
   end
 
   pipeline :api do
@@ -19,8 +20,21 @@ defmodule Auth0AppWeb.Router do
   scope "/", Auth0AppWeb do
     pipe_through :browser
 
-    get "/h", PageController, :home
+    get "/", PublicController, :home_public
+    get "/public", PublicController, :home_public
+  end
+
+  scope "/private", Auth0AppWeb do
+    pipe_through :browser
+    pipe_through :secure
+    get "/", PrivateController, :somePrivateFunction
     get "/logout", AuthController, :logout
+  end
+
+  scope "/private2", Auth0AppWeb do
+    pipe_through :browser
+    # get "/", PageController, :public
+    get "/", PageController, :home  # this is the same as the one above, just the security plug is iside the controller
   end
 
   # Other scopes may use custom stacks.
@@ -51,5 +65,32 @@ defmodule Auth0AppWeb.Router do
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
     post "/:provider/callback", AuthController, :callback
+    # get "/logout", AuthController, :logout
+  end
+
+
+
+
+  def secure(conn, _params) do
+    user = get_session(conn, :current_user)
+    dbg(user)
+
+    case user do
+      nil ->
+        conn
+        |> redirect(to: "/auth/auth0")
+        # |> fn x -> dbg(["miro025", x]); x end.()
+        |> halt
+
+      _ ->
+        dbg user
+        assign(conn, :current_user, user)
+    end
+  end
+
+  def fetch_current_user_or_nil(conn, _opts) do
+    user = get_session(conn, :current_user)
+    userName = if user, do: user.name, else: "nil"; dbg userName
+    assign(conn, :current_user, user)
   end
 end

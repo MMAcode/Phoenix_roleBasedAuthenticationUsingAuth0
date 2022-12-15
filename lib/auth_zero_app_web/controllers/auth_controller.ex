@@ -1,14 +1,15 @@
 defmodule Auth0AppWeb.AuthController do
   use Auth0AppWeb, :controller
-  alias Auth0AppWeb.Router.Helpers
+  # alias Auth0AppWeb.Router.Helpers
+  # alias Ueberauth.Strategy.Helpers
   plug Ueberauth
-  alias Ueberauth.Strategy.Helpers
 
   def logout(conn, _params) do
     dbg "miro1234"
     conn
     |> put_flash(:info, "You have been logged out!")
     |> configure_session(drop: true)
+    |> clear_session()
     |> redirect(to: "/")
   end
 
@@ -26,6 +27,7 @@ defmodule Auth0AppWeb.AuthController do
         conn
         |> put_flash(:info, "Successfully authenticated as " <> user.name <> ".")
         |> put_session(:current_user, user)
+        # |> configure_session(renew: true)
         |> redirect(to: "/")
       {:error, reason} ->
         conn

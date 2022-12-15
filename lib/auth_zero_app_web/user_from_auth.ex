@@ -6,6 +6,7 @@ defmodule UserFromAuth do
   alias Ueberauth.Auth
 
   def find_or_create(%Auth{provider: :identity} = auth) do
+    dbg "miro in find_or_create 1"
     case validate_pass(auth.credentials) do
       :ok ->
         {:ok, basic_info(auth)}
@@ -14,6 +15,7 @@ defmodule UserFromAuth do
   end
 
   def find_or_create(%Auth{} = auth) do
+    dbg "miro in find_or_create 2"
     {:ok, basic_info(auth)}
   end
 
