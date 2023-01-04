@@ -4,10 +4,10 @@ defmodule Auth0AppWeb.MyStructure.MyStructureHTML do
   use Phoenix.Component
 
   def myStructureF(assigns) do
-    dbg(__DIR__)
 
     ~H"""
-    my structure <.filef />
+    my structure 
+    <.filef />
     """
   end
 

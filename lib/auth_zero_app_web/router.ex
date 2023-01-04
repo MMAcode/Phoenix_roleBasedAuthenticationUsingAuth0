@@ -22,13 +22,16 @@ defmodule Auth0AppWeb.Router do
 
     get "/", PublicController, :home_public
     get "/public", PublicController, :home_public
+    live "/live", MyLivePage
+
     get "/myStructure", MyStructure.MyStructureController, :myStructure
   end
 
   scope "/private", Auth0AppWeb do
-    pipe_through :browser
-    pipe_through :secure
+    pipe_through [:browser, :secure]
+
     get "/", PrivateController, :somePrivateFunction
+    live "/live", MyPrivateLivePage
     get "/logout", AuthController, :logout
   end
 
@@ -74,7 +77,7 @@ defmodule Auth0AppWeb.Router do
 
   def secure(conn, _params) do
     user = get_session(conn, :current_user)
-    dbg(user)
+    # dbg(user)
 
     case user do
       nil ->
@@ -90,8 +93,10 @@ defmodule Auth0AppWeb.Router do
   end
 
   def fetch_current_user_or_nil(conn, _opts) do
-    user = get_session(conn, :current_user)
-    userName = if user, do: user.name, else: "nil"; dbg userName
+    user = get_session(conn, :current_user) |> dbg()
+    # userName = if user, do: user.name, else: "nil"; dbg userName
     assign(conn, :current_user, user)
+    |> assign(:xx, "xx")
+    # conn
   end
 end
